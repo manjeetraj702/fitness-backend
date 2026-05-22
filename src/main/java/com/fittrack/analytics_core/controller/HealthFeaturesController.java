@@ -5,7 +5,6 @@ import com.fittrack.analytics_core.model.UserProfileDocument;
 import com.fittrack.analytics_core.repository.UserProfileRepository;
 import com.fittrack.analytics_core.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value; // 🎯 CRITICAL IMPORT FOR ENVIRONMENT VARIABLES
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,11 +29,8 @@ public class HealthFeaturesController {
     @Autowired
     private RestTemplate restTemplate;
 
-    // 🎯 FIX: Dynamic Cloud Routing Setup
-    // Looks for 'PYTHON_BASE_URL' environment variable on Render dashboard.
-    // If not found (like when running on your Mac), it cleanly falls back to localhost.
-    @Value("${PYTHON_BASE_URL:http://localhost:5001}")
-    private String pythonBaseUrl;
+    // 🎯 DIRECT PRODUCTION LINK: Hardcoded live cloud Python API domain
+    private final String pythonBaseUrl = "https://bulk-fitness-ml.onrender.com";
 
     // --------------------------------------------------------
     // API ENDPOINT 3: FETCH HISTORICAL TRACKING DATA
@@ -59,7 +55,7 @@ public class HealthFeaturesController {
     // --------------------------------------------------------
     @PostMapping("/calculate-food")
     public ResponseEntity<?> proxyCalorieCalculation(@RequestBody Map<String, Object> requestPayload) {
-        // 🎯 FIX: Dynamically construct URL path instead of hardcoding localhost port configurations
+        // Dynamically construct URL path without needing environment lookups
         String finalPythonTargetUrl = pythonBaseUrl + "/calculate-calories";
 
         try {
@@ -68,7 +64,6 @@ public class HealthFeaturesController {
             Map<String, Object> pythonResponse = restTemplate.postForObject(finalPythonTargetUrl, requestPayload, Map.class);
             return ResponseEntity.ok(pythonResponse);
         } catch (Exception e) {
-            // Log full trace to your Render console log stack for visual debugging audits
             System.err.println("Cloud Routing Handshake Exception: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Calorie Calculation Engine is offline.", "details", e.getMessage()));

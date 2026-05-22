@@ -1,7 +1,6 @@
 package com.fittrack.analytics_core.service;
 
 import com.fittrack.analytics_core.model.UserProfileDocument;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
@@ -13,11 +12,8 @@ public class AnalyticsService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // 🎯 DYNAMIC CLOUD ROUTING:
-    // This looks for a cloud environment variable named "PYTHON_ML_URL".
-    // If it isn't found (like when running on your Mac), it safely falls back to your local port.
-    @Value("${PYTHON_ML_URL:http://localhost:5001/generate-plan}")
-    private String pythonMlUrl;
+    // 🎯 DIRECT PRODUCTION LINK: Hardcoded live cloud ML service route
+    private final String pythonMlUrl = "https://bulk-fitness-ml.onrender.com/generate-plan";
 
     @SuppressWarnings("unchecked")
     public UserProfileDocument processAndSaveAnalytics(UserProfileDocument profile) {
@@ -29,7 +25,7 @@ public class AnalyticsService {
         pythonRequest.put("heightCm", profile.getHeightCm());
         pythonRequest.put("optimizationGoal", profile.getOptimizationGoal());
 
-        // 2. Dynamic Network exchange pointing to your live Render endpoint url
+        // 2. Direct Network exchange pointing to your live Render endpoint url
         Map<String, Object> mlResult = restTemplate.postForObject(pythonMlUrl, pythonRequest, Map.class);
 
         // 3. Assemble nested structures to prevent UI "undefined" errors
