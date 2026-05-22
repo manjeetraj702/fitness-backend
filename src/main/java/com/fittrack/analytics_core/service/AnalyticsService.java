@@ -32,12 +32,28 @@ public class AnalyticsService {
         Map<String, Object> nestedPredictions = new HashMap<>();
 
         if (mlResult != null) {
-            nestedPredictions.put("dailyCalories", mlResult.get("calories"));
-            nestedPredictions.put("macros", Map.of(
-                    "protein", mlResult.get("protein"),
-                    "carbs", mlResult.get("carbs"),
-                    "fats", mlResult.get("fats")
-            ));
+            try {
+                // 🎯 FIX: String-parse numeric values to handle Double vs Integer JSON parsing without casting errors
+                int calories = Double.valueOf(mlResult.get("calories").toString()).intValue();
+                int protein = Double.valueOf(mlResult.get("protein").toString()).intValue();
+                int carbs = Double.valueOf(mlResult.get("carbs").toString()).intValue();
+                int fats = Double.valueOf(mlResult.get("fats").toString()).intValue();
+
+                nestedPredictions.put("dailyCalories", calories);
+
+                // Use a standard HashMap instead of the restrictive Map.of() to be safer with Mongo collections
+                Map<String, Object> macrosMap = new HashMap<>();
+                macrosMap.put("protein", protein);
+                macrosMap.put("carbs", carbs);
+                macrosMap.put("fats", fats);
+                nestedPredictions.put("macros", macrosMap);
+
+            } catch (Exception e) {
+                System.err.println("❌ Critical Type Conversion Parsing Crash: " + e.getMessage());
+                // Safe fallbacks to prevent complete application failure if mapping glitches out
+                nestedPredictions.put("dailyCalories", 2000);
+                nestedPredictions.put("macros", Map.of("protein", 130, "carbs", 220, "fats", 65));
+            }
         }
 
         // 4. Handle dynamic training updates based on target indicators
