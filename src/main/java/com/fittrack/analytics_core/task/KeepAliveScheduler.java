@@ -14,7 +14,7 @@ public class KeepAliveScheduler {
     private final String pythonMlUrl = "https://bulk-fitness-ml.onrender.com/";
 
 
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 300000)
     public void maintainCloudContainersWarmth() {
         System.out.println("💓 Triggering automated cloud lifecycle keep-alive ping sweep...");
 
