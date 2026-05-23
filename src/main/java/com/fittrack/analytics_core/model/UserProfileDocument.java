@@ -1,6 +1,8 @@
 package com.fittrack.analytics_core.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
@@ -8,6 +10,8 @@ import java.util.Map;
 
 @Data
 @Document(collection = "health_analytics_profiles")
+@Getter
+@Setter
 public class UserProfileDocument {
 
     @Id
