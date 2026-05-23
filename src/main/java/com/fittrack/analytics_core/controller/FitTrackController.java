@@ -23,30 +23,46 @@ public class FitTrackController {
 
     @Autowired
     private UserService userService;
-
     @PostMapping("/predict")
-    public ResponseEntity<?> executePredictivePipeline(@RequestBody UserProfileDocument profile) {
+    public ResponseEntity<?> executePredictivePipeline(
+            @RequestBody UserProfileDocument profile) {
+
         try {
-            // Extracts current context principal security metadata credentials
-            String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-            Optional<User> currentUser = userService.findByEmail(loggedInEmail);
+
+            System.out.println("REQUEST RECEIVED");
+            System.out.println(profile);
+
+            String loggedInEmail =
+                    SecurityContextHolder.getContext()
+                            .getAuthentication()
+                            .getName();
+
+            System.out.println("EMAIL: " + loggedInEmail);
+
+            Optional<User> currentUser =
+                    userService.findByEmail(loggedInEmail);
 
             if (currentUser.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(Map.of("error", "User authentication token payload invalid."));
+                        .body(Map.of("error", "User not found"));
             }
 
-            // Sync structural database document keys
             profile.setUserId(currentUser.get().getId());
 
-            // Pass down to processing orchestration thread layers
-            UserProfileDocument processedData = analyticsService.processAndSaveAnalytics(profile);
+            UserProfileDocument processedData =
+                    analyticsService.processAndSaveAnalytics(profile);
 
             return ResponseEntity.ok(processedData);
 
         } catch (Exception e) {
+
+            e.printStackTrace();
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal Gateway Error: " + e.getMessage()));
+                    .body(Map.of(
+                            "error", e.getClass().getName(),
+                            "message", e.getMessage()
+                    ));
         }
     }
 }
