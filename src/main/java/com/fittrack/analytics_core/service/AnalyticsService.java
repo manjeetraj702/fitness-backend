@@ -26,7 +26,29 @@ public class AnalyticsService {
         pythonRequest.put("optimizationGoal", profile.getOptimizationGoal());
 
         // 2. Direct Network exchange pointing to your live Render endpoint url
-        Map<String, Object> mlResult = restTemplate.postForObject(pythonMlUrl, pythonRequest, Map.class);
+        Map<String, Object> mlResult;
+
+        try {
+
+            mlResult = restTemplate.postForObject(
+                    pythonMlUrl,
+                    pythonRequest,
+                    Map.class
+            );
+
+        } catch (Exception e) {
+
+            System.out.println("❌ Python ML Service Failed");
+            e.printStackTrace();
+
+            // Fallback values so frontend still works
+            mlResult = new HashMap<>();
+
+            mlResult.put("calories", 2500);
+            mlResult.put("protein", 150);
+            mlResult.put("carbs", 250);
+            mlResult.put("fats", 70);
+        }
 
         // 3. Assemble nested structures to prevent UI "undefined" errors
         Map<String, Object> nestedPredictions = new HashMap<>();
