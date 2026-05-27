@@ -14,7 +14,7 @@ public class HealthFeaturesController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     // 🎯 TARGET LINK: Live hardcoded address pointing to your FastAPI instance
-    private final String pythonBaseUrl = "https://bulk-fitness-ml.onrender.com/calculate-calories";
+    private final String pythonBaseUrl = "https://bulk-fitness-ml-m1xn.onrender.com/calculate-calories";
 
     @PostMapping("/calculate-food")
     public ResponseEntity<?> proxyFoodCalculation(@RequestBody Map<String, Object> requestPayload) {

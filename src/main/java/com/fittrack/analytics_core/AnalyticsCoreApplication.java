@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling; // 🎯 FIXED: Added missing import
 
 @SpringBootApplication
-@EnableScheduling //
+@EnableScheduling
 public class AnalyticsCoreApplication {
 
 	public static void main(String[] args) {

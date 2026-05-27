@@ -11,7 +11,7 @@ public class KeepAliveScheduler {
 
     // 🎯 TARGET STRATEGY: Cross-ping both web nodes in a single scheduled execution sweep!
     private final String selfJavaUrl = "https://fitness-backend-b8r0.onrender.com/actuator/health"; // update to match any root endpoint
-    private final String pythonMlUrl = "https://bulk-fitness-ml.onrender.com/";
+    private final String pythonMlUrl = "https://bulk-fitness-ml-m1xn.onrender.com/";
 
 
     @Scheduled(fixedRate = 300000)

@@ -11,7 +11,8 @@ import java.util.Map;
 public class AnalyticsService {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String pythonMlUrl = "https://bulk-fitness-ml.onrender.com/generate-plan";
+    private final String pythonMlUrl = "https://bulk-fitness-ml-m1xn.onrender.com/generate-plan";
+
 
     @SuppressWarnings("unchecked")
     public UserProfileDocument processAndSaveAnalytics(UserProfileDocument profile) {
