@@ -9,29 +9,52 @@ public class KeepAliveScheduler {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // 🎯 TARGET STRATEGY: Cross-ping both web nodes in a single scheduled execution sweep!
-    private final String selfJavaUrl = "https://fitness-backend-b8r0.onrender.com/actuator/health"; // update to match any root endpoint
-    private final String pythonMlUrl = "https://bulk-fitness-ml-m1xn.onrender.com/";
+    // Current Render URLs
+    private final String selfJavaUrl =
+            "https://fitness-backend-1-r8wq.onrender.com/actuator/health";
 
+    private final String pythonMlUrl =
+            "https://bulk-fitness-ml-m1xn.onrender.com/";
 
-    @Scheduled(fixedRate = 240000)
+    @Scheduled(fixedRate = 240000) // 4 minutes
     public void maintainCloudContainersWarmth() {
+
         System.out.println("💓 Triggering automated cloud lifecycle keep-alive ping sweep...");
 
-        // 1. Keep the Java container awake
+        // Keep Spring Boot backend warm
         try {
-            restTemplate.getForObject(selfJavaUrl, String.class);
-            System.out.println("✅ Java Gateway Container: Self-Stabilization Complete.");
+            String response = restTemplate.getForObject(
+                    selfJavaUrl,
+                    String.class
+            );
+
+            System.out.println(
+                    "✅ Java Backend Container Alive: " + response
+            );
+
         } catch (Exception e) {
-            System.err.println("⚠️ Java local heartbeat ping skipped (Expected if endpoint restricted): " + e.getMessage());
+
+            System.err.println(
+                    "⚠️ Java Backend Ping Failed: " + e.getMessage()
+            );
         }
 
-        // 2. Cross-ping the Python container to keep it warm for the frontend
+        // Keep Python ML service warm
         try {
-            restTemplate.getForObject(pythonMlUrl, String.class);
-            System.out.println("✅ Python ML Service Container: Cross-Stabilization Complete.");
+            String response = restTemplate.getForObject(
+                    pythonMlUrl,
+                    String.class
+            );
+
+            System.out.println(
+                    "✅ Python ML Container Alive: " + response
+            );
+
         } catch (Exception e) {
-            System.err.println("❌ Python container wake loop exception: " + e.getMessage());
+
+            System.err.println(
+                    "❌ Python ML Ping Failed: " + e.getMessage()
+            );
         }
     }
 }
